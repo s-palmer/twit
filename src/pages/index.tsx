@@ -11,9 +11,14 @@ import { PostView } from "~/components/Post/postview";
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
-  if (postsLoading) return <LoadingPage />
+  if (postsLoading)
+    return (
+      <div className="flex grow">
+        <LoadingPage />
+      </div>
+    );
 
-  if (!data) return <div>Something went wrong</div>
+  if (!data) return <div>Something went wrong</div>;
 
   return (
     <div className="flex flex-col">
@@ -28,6 +33,7 @@ const CreatePostWizard = () => {
   const { user } = useUser();
 
   const [input, setInput] = useState("")
+
   const ctx = api.useContext()
 
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
@@ -45,26 +51,28 @@ const CreatePostWizard = () => {
 
   if (!user) return null
 
-  return <div className="flex gap-3 w-full">
-    <Image src={user.profileImageUrl} alt="Profile Image" className="w-14 h-14 rounded-full" width={56} height={56} />
-    <input
-      type="text"
-      placeholder="Add a twit"
-      className="bg-transparent grow outline-none"
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      disabled={isPosting}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          if (input !== "") {
-            mutate({ content: input });
+  return (
+    <div className="flex gap-3 w-full">
+      <Image src={user.profileImageUrl} alt="Profile Image" className="w-14 h-14 rounded-full" width={56} height={56} />
+      <input
+        type="text"
+        placeholder="Add a twit"
+        className="bg-transparent grow outline-none"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        disabled={isPosting}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            if (input !== "") {
+              mutate({ content: input });
+            }
           }
-        }
-      }} />
-    {input !== "" && !isPosting && <button onClick={() => { mutate({ content: input }); }}>Twit</button>}
-    {isPosting && <div className="flex items-center justify-center"><LoadingSpinner size={20} /></div>}
-  </div>
+        }} />
+      {input !== "" && !isPosting && <button onClick={() => { mutate({ content: input }); }}>Twit</button>}
+      {isPosting && <div className="flex items-center justify-center"><LoadingSpinner size={20} /></div>}
+    </div>
+  )
 }
 
 const Home: NextPage = () => {
@@ -77,23 +85,21 @@ const Home: NextPage = () => {
   if (!userLoaded) return <div />
 
   return (
-    <>
-      <PageLayout>
-        <div className="border-b border-slate-400 p-4">
-          {!isSignedIn && (
-            <div className="flex justify-center">
-              <SignInButton redirectUrl="/">
-                Sign in
-              </SignInButton>
-            </div>
-          )}
-          {!!isSignedIn &&
-            <CreatePostWizard />
-          }
-        </div>
-        <Feed />
-      </PageLayout>
-    </>
+    <PageLayout>
+      <div className="border-b border-slate-400 p-4">
+        {!isSignedIn && (
+          <div className="flex justify-center">
+            <SignInButton redirectUrl="/">
+              Sign in
+            </SignInButton>
+          </div>
+        )}
+        {isSignedIn &&
+          <CreatePostWizard />
+        }
+      </div>
+      <Feed />
+    </PageLayout>
   );
 };
 
