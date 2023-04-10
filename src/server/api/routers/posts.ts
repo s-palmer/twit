@@ -58,7 +58,10 @@ export const postRouter = createTRPCRouter({
     });
   }),
   create: privateProcedure.input(z.object({
-    content: z.string().min(1).max(255),
+    content: z.string({
+      required_error: "Please enter your Twit.",
+      invalid_type_error: "Please enter a valid Twit.",
+    }).min(1, { message: "Twit must be 1 or more characters long"}).max(255, { message: "Your Twit is too long."}),
   })).mutation(async ({ ctx, input }) => {
     const authorId = ctx.currentUser;
 
