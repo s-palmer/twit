@@ -13,7 +13,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <Head>
         <title>TwitTwoo - 🐦</title>
         <meta name="description" content="🐦" />
-        <link rel="icon" href="" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Component {...pageProps} />
     </ClerkProvider>)
