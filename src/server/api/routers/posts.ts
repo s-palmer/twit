@@ -35,7 +35,7 @@ const addUserDataToPosts = async (posts: Post[]) => {
     if (!author || !author.username) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Could not find author for post"
+        message: `Could not find author for post ${post.id} with authorId ${post.authorId}`
       });
     }
 
