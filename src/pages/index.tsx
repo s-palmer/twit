@@ -1,10 +1,9 @@
 import { type NextPage } from "next";
-import Head from "next/head";
 import { SignInButton, useUser, SignOutButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import { useState } from "react";
-
+import { PageLayout } from "~/components/Layout/layout";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
@@ -101,28 +100,21 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>TwitTwoo</title>
-        <meta name="description" content="Twit" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="flex justify-center h-screen">
-        <div className="border-slate-400 h-full w-full md:max-w-2xl border-x">
-          <div className="border-b border-slate-400 p-4">
-            {!isSignedIn && (
-              <div className="flex justify-center">]
-                <SignInButton redirectUrl="/">
-                  Sign in
-                </SignInButton>
-              </div>
-            )}
-            {!!isSignedIn &&
-              <CreatePostWizard />
-            }
-          </div>
-          <Feed />
+      <PageLayout>
+        <div className="border-b border-slate-400 p-4">
+          {!isSignedIn && (
+            <div className="flex justify-center">]
+              <SignInButton redirectUrl="/">
+                Sign in
+              </SignInButton>
+            </div>
+          )}
+          {!!isSignedIn &&
+            <CreatePostWizard />
+          }
         </div>
-      </main>
+        <Feed />
+      </PageLayout>
     </>
   );
 };

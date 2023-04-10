@@ -1,17 +1,9 @@
-import { User } from "@clerk/nextjs/dist/api";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
-
-const filterUserForClient = (user: User) => {
-  return {
-    id: user.id,
-    username: user.username,
-    profileImageUrl: user.profileImageUrl,
-  };
-}
 
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis";
@@ -61,7 +53,7 @@ export const postRouter = createTRPCRouter({
     content: z.string({
       required_error: "Please enter your Twit.",
       invalid_type_error: "Please enter a valid Twit.",
-    }).min(1, { message: "Twit must be 1 or more characters long"}).max(255, { message: "Your Twit is too long."}),
+    }).min(1, { message: "Twit must be 1 or more characters long" }).max(255, { message: "Your Twit is too long." }),
   })).mutation(async ({ ctx, input }) => {
     const authorId = ctx.currentUser;
 
