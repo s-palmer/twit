@@ -3,6 +3,7 @@ import Head from "next/head";
 import { SignInButton, useUser, SignOutButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
+import { useState } from "react";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -37,11 +38,28 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col">
-      {data?.map((fullPost) => (
+      {data.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
   )
+}
+
+const CreatePostWizard = () => {
+  const { user } = useUser();
+
+  const [input, setInput] = useState("")
+  const ctx = api.useContext()
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({ onSuccess: () => { setInput(""); void ctx.posts.getAll.invalidate() } })
+
+  if (!user) return null
+
+  return <div className="flex gap-3 w-full">
+    <Image src={user.profileImageUrl} alt="Profile Image" className="w-14 h-14 rounded-full" width={56} height={56} />
+    <input type="text" placeholder="Add a twit" className="bg-transparent grow outline-none" value={input} onChange={(e) => setInput(e.target.value)} disabled={isPosting} />
+    <button onClick={() => { mutate({ content: input }); }}>Twit</button>
+  </div>
 }
 
 const Home: NextPage = () => {
@@ -52,17 +70,6 @@ const Home: NextPage = () => {
 
   // Return empty div if user isn't loaded
   if (!userLoaded) return <div />
-
-  const CreatePostWizard = () => {
-    const { user } = useUser();
-
-    if (!user) return null
-
-    return <div className="flex gap-3 w-full">
-      <Image src={user.profileImageUrl} alt="Profile Image" className="w-14 h-14 rounded-full" width={56} height={56} />
-      <input type="text" placeholder="Add a twit" className="bg-transparent grow outline-none" />
-    </div>
-  }
 
   return (
     <>
