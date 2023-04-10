@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { SignInButton, useUser, SignOutButton } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { PageLayout } from "~/components/Layout/layout";
