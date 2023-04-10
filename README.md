@@ -1,6 +1,6 @@
 # TwitTwoo
 
-- Simple social media clone built using:
+Simple social media clone built using:
 
 - [Next.js](https://nextjs.org)
 - [TypeScript](https://www.typescriptlang.org/)
