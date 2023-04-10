@@ -21,34 +21,56 @@ const ratelimit = new Ratelimit({
   prefix: "@upstash/ratelimit",
 });
 
+import type { Post } from "@prisma/client";
+
+const addUserDataToPosts = async (posts: Post[]) => {
+  const users = (await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.authorId),
+    limit: 100,
+  })).map(filterUserForClient);
+
+  return posts.map((post) => {
+    const author = users.find((user) => user.id === post.authorId);
+
+    if (!author || !author.username) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Could not find author for post"
+      });
+    }
+
+    return {
+      post,
+      author: {
+        ...author,
+        username: author.username,
+      }
+    }
+  });
+}
+
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({ take: 100, orderBy: { createdAt: "desc" } });
 
-    const users = (await clerkClient.users.getUserList({
-      userId: posts.map((post) => post.authorId),
-      limit: 100,
-    })).map(filterUserForClient);
-
-    return posts.map((post) => {
-      const author = users.find((user) => user.id === post.authorId);
-
-      if (!author || !author.username) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Could not find author for post"
-        });
-      }
-
-      return {
-        post,
-        author: {
-          ...author,
-          username: author.username,
-        }
-      }
-    });
+    return addUserDataToPosts(posts);
   }),
+  getPostsByUserId: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(({ ctx, input }) =>
+      ctx.prisma.post.findMany({
+        where: {
+          authorId: input.userId,
+        },
+        take: 100,
+        orderBy: { createdAt: "desc" }
+      }).then(addUserDataToPosts)
+    )
+  ,
   create: privateProcedure.input(z.object({
     content: z.string({
       required_error: "Please enter your Twit.",
