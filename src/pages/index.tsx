@@ -22,7 +22,7 @@ const PostView = (props: PostWithUser) => {
           <span>{`@${author.username}`}</span>
           <span className="font-thin">{`· ${dayjs(post.createdAt).fromNow()}`}</span>
         </div>
-        <span>{post.content}</span>
+        <span className="texl-2xl">{post.content}</span>
       </div>
     </div>
   </div>
@@ -37,7 +37,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col">
-      {[...data, ...data]?.map((fullPost) => (
+      {data?.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
