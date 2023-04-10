@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { PageLayout } from "~/components/Layout/layout";
 import Image from "next/image";
 import { PostView } from "~/components/Post/postview";
+import { LoadingPage } from "~/components/Loading/loading";
 
 const ProfileFeed = (props: { userId: string }) => {
 
@@ -59,7 +60,6 @@ import { createServerSideHelpers } from '@trpc/react-query/server';
 import { appRouter } from '~/server/api/root';
 import { prisma } from "~/server/db";
 import superjson from 'superjson';
-import { LoadingPage } from "~/components/Loading/loading";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createServerSideHelpers({
